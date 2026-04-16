@@ -233,8 +233,10 @@ function finishSpin() {
 
     let type = currentWinner.type;
     let label = currentWinner.label;
+    const winValue = parseFloat(currentWinner.value) || 0; // Определяем ценность приза
 
     // --- ПРОВЕРКА СТРАХОВКИ ---
+    let usedInsuranceThisTurn = hasInsurance; // Запоминаем для отчета, была ли защита
     if (hasInsurance) {
         if (type === 'liquis' || type === 'danger') {
             type = 'empty';
@@ -252,25 +254,27 @@ function finishSpin() {
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
 
     } else if (type === 'danger') {
-        // Берем 55% от ТОГО, ЧТО ОСТАЛОСЬ после вычета SPIN_COST
         const amountToLose = tonBalance * 0.55;
         tonBalance -= amountToLose;
         label = `⚠️ ПОТЕРЯ: -${amountToLose.toFixed(2)} TON (55%)`;
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
 
     } else if (type !== 'empty') {
-        const winValue = parseFloat(currentWinner.value) || 0;
         starBalance += winValue;
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
 
-    // ОБНОВЛЯЕМ ЭКРАН И ПАМЯТЬ ПОСЛЕ РАСЧЕТА
+    // ОБНОВЛЯЕМ ЭКРАН
     updateUI(); 
     
     resultDisplay.innerText = label;
     resultDisplay.style.color = (type === 'liquis' || type === 'danger') ? "#ff0000" : "#bc13fe";
     
     updateHistory(label, type);
+
+    // --- ВОТ ОН, ВЫЗОВ АУДИТОРА! ---
+    // Передаем фактическую страховку, которая была в этом ходу
+    sendToAuditor(label, type, winValue, usedInsuranceThisTurn); 
     
     setTimeout(() => {
         const container = document.querySelector('.app-container');
