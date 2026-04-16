@@ -56,6 +56,71 @@ body {
 .value { font-weight: bold; font-size: 18px; }
 .currency { color: var(--neon-gold); margin-left: 4px; }
 
+/* --- ТОНКИЙ XP SIDEBAR --- */
+
+.progress-container {
+    width: 90%;
+    margin: 10px auto; /* Чуть уменьшили отступы */
+    font-family: Arial, sans-serif;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    color: #fff;
+    font-size: 11px; /* Чуть меньше шрифт, чтобы гармонировал */
+    font-weight: bold;
+    margin-bottom: 3px; /* Меньше отступ до полоски */
+    text-shadow: 0 0 5px rgba(0, 184, 212, 0.5);
+}
+
+.progress-bar-bg {
+    width: 100%;
+    
+    /* ВОТ ТУТ МЕНЯЕМ ВЫСОТУ: СДЕЛАЛИ 6px ВМЕСТО 12px */
+    height: 6px; 
+    
+    background: rgba(255, 255, 255, 0.05); /* Чуть прозрачнее фон */
+    border-radius: 3px; /* Закругление под новую высоту */
+    overflow: hidden;
+    border: 1px solid rgba(0, 184, 212, 0.2);
+}
+
+.progress-fill {
+    width: 0%; /* Контролируется JS */
+    height: 100%;
+    background: linear-gradient(90deg, #bc13fe, #00B8D4);
+    
+    /* Оставляем сочный неон, на тонкой полоске он смотрится круче */
+    box-shadow: 0 0 10px rgba(0, 184, 212, 0.7); 
+    
+    /* Плавная анимация заполнения */
+    transition: width 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.history-item {
+    display: grid;
+    grid-template-columns: 20px 1fr 40px 100px; /* Статус | Операция | LVL | Итог */
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    font-family: 'Courier New', monospace; /* Придает вид терминала */
+}
+
+.op-name { color: #fff; font-weight: 500; }
+.lvl-val { color: #bc13fe; text-align: center; }
+.res-val { color: #00B8D4; text-align: right; font-weight: bold; }
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.status-win { background: #00ff00; box-shadow: 0 0 8px #00ff00; }
+.status-loss { background: #ff0000; box-shadow: 0 0 8px #ff0000; }
+.status-neutral { background: #bc13fe; box-shadow: 0 0 8px #bc13fe; }
+
 /* WHEEL SECTION */
 .wheel-section {
     flex-grow: 1;
@@ -96,21 +161,54 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 70px;
-    height: 70px;
+    
+    /* Увеличиваем размер кнопки */
+    width: 100px; 
+    height: 100px;
+    
+    /* Оформление */
+    background: #1a1a1a;
+    border: 4px solid #00B8D4; /* Наш фирменный неоновый синий */
     border-radius: 50%;
-    border: 4px solid var(--bg-dark);
-    background: #e87000;
-    color: white;
+    
+    /* Текст */
+    color: #ffffff;
+    font-size: 10px;
     font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    
+    /* Центрируем текст внутри */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
     cursor: pointer;
-    z-index: 11;
-    box-shadow: 0 0 25px rgba(255, 140, 0, 0.6); /* Оранжевое свечение */
-    transition: 0.2s;
+    z-index: 100; /* Кнопка ВСЕГДА над колесом */
+    
+    /* МОЩНЫЙ НЕОНОВЫЙ ЭФФЕКТ */
+    box-shadow: 0 0 20px rgba(0, 184, 212, 0.6), 
+                0 0 40px rgba(0, 184, 212, 0.3),
+                inset 0 0 15px rgba(0, 184, 212, 0.4);
+    
+    transition: all 0.2s ease;
+    outline: none;
 }
 
-.spin-button:active { transform: translate(-50%, -50%) scale(0.9); }
-.spin-button:disabled { background: #444; box-shadow: none; opacity: 0.5; }
+/* Эффект нажатия (анимация) */
+.spin-button:active {
+    transform: translate(-50%, -50%) scale(0.92);
+    box-shadow: 0 0 10px rgba(0, 184, 212, 0.8),
+                inset 0 0 20px rgba(0, 184, 212, 0.6);
+}
+
+/* Когда игра идет, кнопку можно немного притушить */
+.spin-button:disabled {
+    opacity: 0.7;
+    border-color: #444;
+    box-shadow: none;
+    cursor: default;
+}
 
 /* Кнопка ЗАСТРАХОВАТЬ (10 ⭐) — стиль "Золотая Защита" */
 .insurance-btn {
