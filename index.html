@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>T-PULSE</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo-group">
+                <h1 class="logo">T-<span class="pulse">PULSE</span></h1>
+            </div>
+            <div class="balance-container">
+                <div class="balance-item ton">
+                    <span id="ton-balance" class="value">100.00</span>
+                    <span class="currency">TON</span>
+                </div>
+                <div class="balance-item stars">
+                    <span id="star-balance" class="value">0</span>
+                    <span class="currency">⭐</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="wheel-section">
+            <div class="wheel-wrapper">
+                <div class="wheel-pointer"></div>
+                
+                <canvas id="wheel-canvas" width="500" height="500"></canvas>
+                
+                <button id="spin-btn" class="spin-button">SPIN</button>
+            </div>
+            
+            <div id="result-display" class="result-display">
+                READY TO SPIN?
+            </div>
+        </main>
+
+        <button onclick="buyInsurance()" class="insurance-btn">ЗАСТРАХОВАТЬ 10 ⭐</button>
+
+        <footer class="history-section">
+            <div class="feed-header">RECENT WINS</div>
+            <div id="history-list" class="history-list">
+                <div class="empty-feed">Удачи в первом вращении!</div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
