@@ -188,39 +188,17 @@ function spin() {
     const endValue = currentAngle + extraRotation + (spins * 2 * Math.PI);
     const startTime = performance.now();
 
-    // --- ПЕРЕМЕННЫЕ ДЛЯ ТРЕЩОТКИ (добавь их перед animate) ---
-    let lastTickAngle = currentAngle;
-    const sectorAngle = (2 * Math.PI) / sectors.length;
-
     function animate(now) {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
         const easeOut = 1 - Math.pow(1 - progress, 4);
-        
         currentAngle = startValue + (endValue - startValue) * easeOut;
-
-        // --- ЛОГИКА ТИКАНИЯ ---
-        // Если колесо повернулось на угол одного сектора — щелкаем
-        if (Math.abs(currentAngle - lastTickAngle) >= sectorAngle) {
-            playSound('tick'); 
-            lastTickAngle = currentAngle;
-            
-            // Легкое вибро в такт щелчку (если в Телеге)
-            if (window.Telegram?.WebApp?.HapticFeedback) {
-                window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-            }
-        }
-
         canvas.style.transform = `rotate(${currentAngle}rad)`;
         spinBtn.style.transform = `translate(-50%, -50%) rotate(${currentAngle}rad)`;
-
         if (progress < 1) {
             requestAnimationFrame(animate);
         } else {
-            // Возвращаем кнопку в исходку и озвучиваем финал
             spinBtn.style.transform = `translate(-50%, -50%) rotate(0deg)`;
-            
-            // В finishSpin() добавь playSound('win') или playSound('loss')
             finishSpin();
         }
     }
@@ -242,7 +220,6 @@ function finishSpin() {
             type = 'safe';
             label = "🛡️ СТРАХОВКА СПАСЛА!";
             if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            playSound('win'); // Страховка сработала — это победа
         }
         hasInsurance = false; 
     }
@@ -252,46 +229,27 @@ function finishSpin() {
         label = "💀 ЛИКВИДАЦИЯ: -100%";
         document.querySelector('.app-container').classList.add('shake-anim');
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-        playSound('loss'); // Звук фиаско
     } else if (type === 'danger') {
         const amountToLose = tonBalance * 0.55;
         tonBalance -= amountToLose;
         label = `⚠️ ПОТЕРЯ: -${amountToLose.toFixed(2)} TON`;
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-        playSound('loss'); // Тоже плохой исход
     } else if (type === 'stars' || type === 'epic') {
         starBalance += winValue;
         label = `🎉 ВЫИГРАНО: ${winValue} ⭐`;
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        playSound('win'); // Звук джекпота или звезд
     } else if (type === 'common') {
-        // --- ЛОГИКА XP И УРОВНЯ ---
         xpBalance += winValue; 
         label = `⚡ +${winValue} XP ПОЛУЧЕНО`;
-        
-        // Проверяем левел-ап прямо здесь
-        let currentTarget = userLevel * 100; // Наша формула прогрессии
-        if (xpBalance >= currentTarget && userLevel < 10) {
-            userLevel += 1;
-            xpBalance -= currentTarget;
-            label = `🚀 LEVEL UP: ${userLevel}!`;
-            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            playSound('win'); // Левел-ап должен звучать круто
-        } else {
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-            playSound('tick'); // Обычное начисление — просто щелчок
-        }
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
     } else if (type === 'rare_scroll' || type === 'rare_amulet') {
         label = `🎁 ПРИЗ: ${currentWinner.label}`;
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        playSound('win');
     }
 
     updateUI(); 
     resultDisplay.innerText = label;
     resultDisplay.style.color = (type === 'liquis' || type === 'danger') ? "#ff0000" : "#00B8D4";
-    
-    // В историю теперь улетит актуальный уровень
     updateHistory(label, type);
     sendToAuditor(label, type, winValue, usedInsuranceThisTurn); 
     
@@ -336,7 +294,7 @@ function sendToAuditor(label, type, winValue, insUsed) {
         insuranceUsed: insUsed ? "Да" : "Нет",
         timestamp: new Date().toLocaleString("ru-RU")
     };
-    fetch('https://tiktiok.xyz/webhook/T-Pulse', {
+    fetch('https://tiktiok.xyz/webhook-test/T-Pulse', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
