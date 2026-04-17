@@ -1,0 +1,209 @@
+/* ОБЩИЕ НАСТРОЙКИ */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    color: #fff;
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    font-style: normal; /* НИКАКОГО КУРСИВА */
+    -webkit-font-smoothing: antialiased;
+}
+
+.app-container {
+    padding-bottom: 160px; /* Место под стики-футер и навигацию */
+}
+
+/* ШАПКА РЕЙТИНГА */
+.rating-header {
+    background: linear-gradient(180deg, #1c1c1e 0%, #000 100%);
+    padding: 30px 20px;
+    text-align: center;
+    border-bottom: 1px solid #2c2c2e;
+}
+
+.trophy-wrapper {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: 800; /* Максимально жирный */
+    margin: 0 0 15px 0;
+    letter-spacing: -0.5px;
+}
+
+.timer-container {
+    background: rgba(255, 219, 88, 0.1);
+    border: 1px solid rgba(255, 219, 88, 0.2);
+    padding: 10px 20px;
+    border-radius: 14px;
+    display: inline-block;
+}
+
+.timer-text {
+    display: block;
+    font-size: 10px;
+    color: #8e8e93;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.timer-countdown {
+    color: #FFDB58;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.description {
+    color: #8e8e93;
+    font-size: 13px;
+    margin-top: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* СПИСОК ИГРОКОВ */
+.leaderboard-section {
+    padding: 20px 15px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 800;
+    color: #48484a;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding: 0 5px;
+}
+
+.label-stats span {
+    margin-left: 20px;
+}
+
+/* КАРТОЧКА ИГРОКА */
+.player-card {
+    background: #1c1c1e;
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    border: 1px solid transparent;
+}
+
+.rank-badge {
+    width: 28px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #8e8e93;
+}
+
+.top-1 .rank-badge { color: #FFDB58; }
+.top-2 .rank-badge { color: #D1D1D1; }
+.top-3 .rank-badge { color: #CD7F32; }
+
+.player-info {
+    flex-grow: 1;
+}
+
+.player-name {
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.player-reward {
+    margin-right: 20px;
+    font-size: 18px;
+}
+
+.player-score {
+    font-weight: 800;
+    color: #bc13fe;
+    font-size: 16px;
+}
+
+/* ФУТЕР "ВЫ" */
+.sticky-user-footer {
+    position: fixed;
+    bottom: 85px;
+    left: 15px;
+    right: 15px;
+    z-index: 99;
+}
+
+.user-row {
+    background: #2c2c2e;
+    border: 1px solid #bc13fe;
+    border-radius: 18px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.user-rank { font-weight: 800; color: #8e8e93; margin-right: 15px; }
+.user-avatar-placeholder { width: 30px; height: 30px; background: #444; border-radius: 50%; margin-right: 10px; }
+.user-label { flex-grow: 1; font-weight: 800; }
+.user-points { font-weight: 800; color: #bc13fe; }
+
+/* НАВИГАЦИЯ */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background-color: #1c1c1e; /* Глубокий темный */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #2c2c2e; /* Тонкая линия разделения */
+    padding-bottom: env(safe-area-inset-bottom); /* Поддержка iPhone с челкой */
+    z-index: 1000;
+}
+
+/* Ссылка (элемент меню) */
+.nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-decoration: none; /* Убираем синее подчеркивание */
+    color: #8e8e93; /* Цвет неактивных пунктов */
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent; /* Убираем серый квадрат при клике на мобилках */
+}
+
+/* Иконка */
+.nav-icon {
+    font-size: 22px;
+    margin-bottom: 4px;
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+/* Текст под иконкой */
+.nav-text {
+    font-size: 11px;
+    font-weight: 700; /* Жирный, как ты просил */
+    font-style: normal;
+    text-transform: none;
+}
+
+/* СОСТОЯНИЕ: АКТИВНЫЙ ПУНКТ (Main на главной) */
+.nav-link.active {
+    color: #bc13fe; /* Твой фиолетовый */
+}
+
+.nav-link.active .nav-icon {
+    transform: translateY(-3px); /* Легкий эффект прыжка вверх */
+}
+
+/* Эффект при нажатии */
+.nav-link:active {
+    transform: scale(0.9);
+}

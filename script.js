@@ -25,61 +25,102 @@ let isSpinning = false;
 let currentWinner = null;
 
 const sectors = [
-    { label: "🌟 JACKPOT", value: "JACKPOT", visualWeight: 1, winChance: 0.5, type: 'epic' }, 
-    { label: "30 XP", value: "30", visualWeight: 1, winChance: 15, type: 'common' },
-    { label: "📜 СВИТОК", value: "SCROLL", visualWeight: 1, winChance: 8, type: 'rare_scroll' },
-    { label: "10 ЗВЕЗД", value: "10_STARS", visualWeight: 1, winChance: 2, type: 'stars' },
-    { label: "⚠️ ПОТЕРЯ 55%", value: "55%", visualWeight: 1, winChance: 10, type: 'danger' },
-    { label: "20 XP", value: "20", visualWeight: 1, winChance: 20, type: 'common' },
-    { label: "📜 СВИТОК", value: "SCROLL", visualWeight: 1, winChance: 8, type: 'rare_scroll' },
-    { label: "3 ЗВЕЗДЫ", value: "3_STARS", visualWeight: 1, winChance: 5, type: 'stars' },
-    { label: "💀 ЛИКВИДАЦИЯ", value: "FULL", visualWeight: 1, winChance: 5, type: 'liquis' },
-    { label: "50 XP", value: "50", visualWeight: 1, winChance: 10, type: 'common' },
-    { label: "🎭 МАСКА", value: "AMULET", visualWeight: 1, winChance: 3, type: 'rare_amulet' },
-    { label: "1 ЗВЕЗДА", value: "1_STAR", visualWeight: 1, winChance: 13.5, type: 'stars' }
+    { label: "🌟 JACKPOT", value: "500", winChance: 0.5, type: 'epic', color: '#FFDB58' }, // 0: Mustard (Верх)
+    { label: "10 XP", value: "10", winChance: 10, type: 'common', color: '#4a148c' },
+    { label: "5 ЗВЕЗД", value: "5", winChance: 6, type: 'stars', color: '#00bcd4' },
+    { label: "15 XP", value: "15", winChance: 10, type: 'common', color: '#6a1b9a' },
+    { label: "📜 СВИТОК", value: "SCROLL", winChance: 5, type: 'rare_scroll', color: '#0288d1' },
+    { label: "20 XP", value: "20", winChance: 10, type: 'common', color: '#7b1fa2' },
+    { label: "30 XP", value: "30", winChance: 8, type: 'common', color: '#8e24aa' },
+    { label: "1 ЗВЕЗДА", value: "1", winChance: 10, type: 'stars', color: '#00acc1' },
+    
+    { label: "💀 LIKVID", value: "FULL", winChance: 1, type: 'liquis', color: '#050505' },   // 8: Black (120°)
+    { label: "25 XP", value: "25", winChance: 10, type: 'common', color: '#9c27b0' },
+    { label: "🎭 МАСКА", value: "AMULET", winChance: 2, type: 'rare_amulet', color: '#039be5' },
+    { label: "10 XP", value: "10", winChance: 10, type: 'common', color: '#ab47bc' },
+    { label: "📜 СВИТОК", value: "SCROLL", winChance: 5, type: 'rare_scroll', color: '#03a9f4' },
+    { label: "20 XP", value: "20", winChance: 10, type: 'common', color: '#ba68c8' },
+    { label: "3 ЗВЕЗДЫ", value: "3", winChance: 6, type: 'stars', color: '#26c6da' },
+    { label: "40 XP", value: "40", winChance: 8, type: 'common', color: '#ce93d8' },
+
+    { label: "⚠️ -55%", value: "55%", winChance: 2, type: 'danger', color: '#CE2029' },    // 16: Fire Engine (240°)
+    { label: "15 XP", value: "15", winChance: 10, type: 'common', color: '#e1bee7' },
+    { label: "📜 СВИТОК", value: "SCROLL", winChance: 5, type: 'rare_scroll', color: '#29b6f6' },
+    { label: "50 XP", value: "50", winChance: 5, type: 'common', color: '#4a148c' },
+    { label: "5 ЗВЕЗД", value: "5", winChance: 5, type: 'stars', color: '#00bcd4' },
+    { label: "10 XP", value: "10", winChance: 10, type: 'common', color: '#6a1b9a' },
+    { label: "20 XP", value: "20", winChance: 10, type: 'common', color: '#7b1fa2' },
+    { label: "30 XP", value: "30", winChance: 5, type: 'common', color: '#0288d1' }
 ];
 
 function drawWheel() {
     if (!canvas) return;
+    
+    // Устанавливаем реальное разрешение
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
-    const radius = canvas.width / 2 - 5;
+    const radius = Math.min(centerX, centerY) - 5;
     let startAngle = 0;
-    const totalVisualWeight = sectors.reduce((sum, s) => sum + s.visualWeight, 0);
+    
+    // ИСПРАВЛЕНО: Добавлен предохранитель || 1
+    const totalVisualWeight = sectors.reduce((sum, s) => sum + (s.visualWeight || 1), 0);
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     sectors.forEach((s, i) => {
-        const arc = (s.visualWeight / totalVisualWeight) * 2 * Math.PI;
+        // ИСПРАВЛЕНО: Добавлен предохранитель || 1
+        const weight = s.visualWeight || 1;
+        const arc = (weight / totalVisualWeight) * 2 * Math.PI;
+        
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, radius, startAngle, startAngle + arc);
-        let gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
-        if (s.type === 'liquis' || s.type === 'danger') {
-            gradient.addColorStop(0, '#ff4b2b'); gradient.addColorStop(1, '#000000');
-        } else if (s.type === 'epic') {
-            gradient.addColorStop(0, '#FFF9C4'); gradient.addColorStop(1, '#F9A825');
+        
+        // ЦВЕТА
+        let fillStyle = "#1a1a1a";
+        if (s.color) {
+            fillStyle = s.color;
         } else if (s.type === 'stars') {
-            gradient.addColorStop(0, '#E0F7FA'); gradient.addColorStop(1, '#00B8D4');
-        } else if (s.type === 'rare_scroll' || s.type === 'rare_amulet') {
-            gradient.addColorStop(0, '#81D4FA'); gradient.addColorStop(1, '#01579B');
-        } else {
-            const hue = 260 + (i * 10); 
-            gradient.addColorStop(0, `hsl(${hue}, 70%, 70%)`);
-            gradient.addColorStop(1, `hsl(${hue}, 80%, 30%)`);
+            fillStyle = '#00B8D4';
+        } else if (s.type === 'common') {
+            fillStyle = i % 2 === 0 ? '#222' : '#333';
         }
-        ctx.fillStyle = gradient;
+
+        ctx.fillStyle = fillStyle;
+        
+        // Свечение для Джекпота
+        ctx.save(); // Сохраняем состояние для тени
+        if (s.type === 'epic') {
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = s.color;
+        } else {
+            ctx.shadowBlur = 0;
+        }
+
         ctx.fill();
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-        ctx.lineWidth = 2;
+        ctx.restore(); // Возвращаем состояние без тени, чтобы не тормозило
+
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+        ctx.lineWidth = 1;
         ctx.stroke();
+
+        // ТЕКСТ
         ctx.save();
         ctx.translate(centerX, centerY);
         ctx.rotate(startAngle + arc / 2);
         ctx.textAlign = "right";
-        ctx.fillStyle = "#fff";
-        ctx.font = "bold 11px Arial";
-        ctx.fillText(s.label, radius - 15, 5);
+        
+        if (s.color === '#FFDB58') ctx.fillStyle = "#000"; 
+        else if (s.color === '#050505') ctx.fillStyle = "#ff0000"; 
+        else ctx.fillStyle = "#fff";
+
+        ctx.font = "bold 9px Arial"; // Чуть меньше шрифт для 24 секторов
+        ctx.fillText(s.label, radius - 10, 4);
         ctx.restore();
+
         startAngle += arc;
     });
 }
@@ -169,14 +210,17 @@ function spin() {
         }
     }
 
-    const totalVisualWeight = sectors.reduce((sum, s) => sum + s.visualWeight, 0);
+    // ИСПРАВЛЕНО: Добавил || 1, чтобы не было деления на 0
+    const totalVisualWeight = sectors.reduce((sum, s) => sum + (s.visualWeight || 1), 0);
     let targetVisualStart = 0;
     for (let i = 0; i < winningIndex; i++) {
-        targetVisualStart += (sectors[i].visualWeight / totalVisualWeight) * 2 * Math.PI;
+        targetVisualStart += ((sectors[i].visualWeight || 1) / totalVisualWeight) * 2 * Math.PI;
     }
-    let targetVisualArc = (sectors[winningIndex].visualWeight / totalVisualWeight) * 2 * Math.PI;
+    
+    let targetVisualArc = ((sectors[winningIndex].visualWeight || 1) / totalVisualWeight) * 2 * Math.PI;
     let targetLocalAngle = targetVisualStart + (targetVisualArc / 2);
     let baseRotation = -Math.PI / 2 - targetLocalAngle;
+    
     while (baseRotation < 0) baseRotation += 2 * Math.PI;
     let currentMod = currentAngle % (2 * Math.PI);
     let extraRotation = baseRotation - currentMod;
@@ -192,12 +236,19 @@ function spin() {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
         const easeOut = 1 - Math.pow(1 - progress, 4);
+        
         currentAngle = startValue + (endValue - startValue) * easeOut;
+        
+        // ВАЖНО: Убедись, что в CSS у #wheel-canvas НЕТ transition: transform
         canvas.style.transform = `rotate(${currentAngle}rad)`;
+        
+        // Кнопка крутится вместе с колесом, а в конце сбрасывается
         spinBtn.style.transform = `translate(-50%, -50%) rotate(${currentAngle}rad)`;
+        
         if (progress < 1) {
             requestAnimationFrame(animate);
         } else {
+            // Остановка
             spinBtn.style.transform = `translate(-50%, -50%) rotate(0deg)`;
             finishSpin();
         }
@@ -220,6 +271,10 @@ function finishSpin() {
             type = 'safe';
             label = "🛡️ СТРАХОВКА СПАСЛА!";
             if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            // Зеленое конфетти, если спасла страховка
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 40, colors: ['#00ff00'], spread: 50, origin: { y: 0.7 } });
+            }
         }
         hasInsurance = false; 
     }
@@ -229,15 +284,34 @@ function finishSpin() {
         label = "💀 ЛИКВИДАЦИЯ: -100%";
         document.querySelector('.app-container').classList.add('shake-anim');
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+        
+        // ЗАПУСК ЧЕРЕПОВ
+        startEmojiRain('💀'); 
+
     } else if (type === 'danger') {
         const amountToLose = tonBalance * 0.55;
         tonBalance -= amountToLose;
         label = `⚠️ ПОТЕРЯ: -${amountToLose.toFixed(2)} TON`;
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+        
+        // ЗАПУСК ГРАФИКОВ ВНИЗ
+        startEmojiRain('📉');
+
     } else if (type === 'stars' || type === 'epic') {
         starBalance += winValue;
         label = `🎉 ВЫИГРАНО: ${winValue} ⭐`;
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+
+        // ЗАПУСК КОНФЕТТИ (если джекпот или звезды)
+        if (typeof confetti === 'function') {
+            confetti({ 
+                particleCount: 150, 
+                spread: 70, 
+                origin: { y: 0.6 }, 
+                colors: type === 'epic' ? ['#FFDB58', '#FFA500', '#FFFFFF'] : ['#00B8D4', '#FFFFFF']
+            });
+        }
+
     } else if (type === 'common') {
         xpBalance += winValue; 
         label = `⚡ +${winValue} XP ПОЛУЧЕНО`;
@@ -257,6 +331,32 @@ function finishSpin() {
         const container = document.querySelector('.app-container');
         if(container) container.classList.remove('shake-anim');
     }, 500);
+}
+
+// Эту функцию добавь ВНЕ finishSpin, в самый низ файла
+function startEmojiRain(emoji) {
+    for (let i = 0; i < 30; i++) {
+        const el = document.createElement('div');
+        el.className = 'emoji-rain-item'; // Добавим класс для контроля
+        el.innerText = emoji;
+        el.style.cssText = `
+            position: fixed;
+            top: -50px;
+            left: ${Math.random() * 100}vw;
+            font-size: ${Math.random() * 20 + 20}px;
+            z-index: 1000;
+            pointer-events: none;
+            transition: transform ${Math.random() * 2 + 1.5}s linear, opacity 2s;
+        `;
+        document.body.appendChild(el);
+
+        setTimeout(() => {
+            el.style.transform = `translateY(${window.innerHeight + 100}px) rotate(${Math.random() * 360}deg)`;
+            el.style.opacity = '0';
+        }, 50);
+
+        setTimeout(() => el.remove(), 3500);
+    }
 }
 
 function updateHistory(label, type) {

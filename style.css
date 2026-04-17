@@ -56,6 +56,181 @@ body {
 .value { font-weight: bold; font-size: 18px; }
 .currency { color: var(--neon-gold); margin-left: 4px; }
 
+/* ЛИДЕРБОРД */
+
+.leaderboard-container {
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 15px;
+    border: 1px solid rgba(188, 19, 254, 0.3);
+}
+
+.leader-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background 0.3s;
+}
+
+.leader-item:last-child { border-bottom: none; }
+
+.leader-item.it-me {
+    background: rgba(188, 19, 254, 0.2);
+    border-radius: 10px;
+    border: 1px solid #bc13fe;
+}
+
+.rank { font-weight: bold; color: #888; width: 25px; }
+.name { flex-grow: 1; margin-left: 10px; color: #fff; }
+.level-badge {
+    background: linear-gradient(45deg, #bc13fe, #00B8D4);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Контейнер меню */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background-color: #1c1c1e; /* Глубокий темный */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #2c2c2e; /* Тонкая линия разделения */
+    padding-bottom: env(safe-area-inset-bottom); /* Поддержка iPhone с челкой */
+    z-index: 1000;
+}
+
+/* Ссылка (элемент меню) */
+.nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-decoration: none; /* Убираем синее подчеркивание */
+    color: #8e8e93; /* Цвет неактивных пунктов */
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent; /* Убираем серый квадрат при клике на мобилках */
+}
+
+/* Иконка */
+.nav-icon {
+    font-size: 22px;
+    margin-bottom: 4px;
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+/* Текст под иконкой */
+.nav-text {
+    font-size: 11px;
+    font-weight: 700; /* Жирный, как ты просил */
+    font-style: normal;
+    text-transform: none;
+}
+
+/* СОСТОЯНИЕ: АКТИВНЫЙ ПУНКТ (Main на главной) */
+.nav-link.active {
+    color: #bc13fe; /* Твой фиолетовый */
+}
+
+.nav-link.active .nav-icon {
+    transform: translateY(-3px); /* Легкий эффект прыжка вверх */
+}
+
+/* Эффект при нажатии */
+.nav-link:active {
+    transform: scale(0.9);
+}
+
+/* АНИМАЦИЯ ПРИ ДЖЕКПОТЕ ИЛИ ЛИКВИДАЦИИ */
+
+/* --- VFX ЭФФЕКТЫ --- */
+
+/* 1. Общая анимация падения (Черепа) */
+@keyframes fall-emoji {
+    0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+.emoji-rain {
+    position: fixed;
+    top: -50px;
+    font-size: 24px;
+    user-select: none;
+    pointer-events: none;
+    z-index: 9999;
+    animation: fall-emoji linear forwards;
+}
+
+/* 2. ТЕМА: GOLDEN JACKPOT */
+.theme-gold .app-container {
+    background: radial-gradient(circle, #2a2a00 0%, #111 70%);
+    border: 2px solid #FFDB58;
+    box-shadow: 0 0 50px rgba(255, 219, 88, 0.4);
+    transition: all 0.5s ease;
+}
+.theme-gold #spin-btn {
+    background: #FFDB58;
+    color: #000;
+    box-shadow: 0 0 30px #FFDB58;
+}
+
+/* 3. ТЕМА: LIQUIDATION RED */
+.theme-red .app-container {
+    background: radial-gradient(circle, #300 0%, #000 70%);
+    border: 2px solid #ff0000;
+    box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+.theme-red #result-display {
+    animation: pulse-red 0.5s infinite alternate;
+}
+@keyframes pulse-red {
+    from { text-shadow: 0 0 5px #ff0000; }
+    to { text-shadow: 0 0 20px #ff0000, 0 0 30px #ff0000; }
+}
+
+/* 4. ТЕМА: GLITCH LOSS (Проигрыш) */
+.theme-glitch .app-container {
+    animation: glitch-bg 0.2s 3;
+    border: 1px solid #CE2029;
+}
+@keyframes glitch-bg {
+    0% { background-color: #111; }
+    50% { background-color: #CE2029; }
+    100% { background-color: #000; }
+}
+
+/* Анимация падения */
+@keyframes fall-emoji {
+    0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+.emoji-rain {
+    position: fixed;
+    top: -50px;
+    font-size: 32px; /* Сделаем покрупнее для хайпа */
+    user-select: none;
+    pointer-events: none;
+    z-index: 10000;
+    animation: fall-emoji linear forwards;
+}
+
+/* Темы для body (чтобы перекрашивать всё приложение) */
+body.theme-gold { background-color: #1a1a00; }
+body.theme-red { background-color: #1a0000; }
+
 /* --- ТОНКИЙ XP SIDEBAR --- */
 
 .progress-container {
@@ -135,11 +310,14 @@ body {
     position: relative;
     width: 320px;
     height: 320px;
+    margin: 0 auto; /* Центрируем обертку */
 }
 
 #wheel-canvas {
+    display: block; /* Убирает лишние отступы снизу */
     width: 100%;
     height: 100%;
+    border-radius: 50%; /* Чтобы тень ложилась ровно по кругу */
     filter: drop-shadow(0 0 20px rgba(188, 19, 254, 0.2));
 }
 
