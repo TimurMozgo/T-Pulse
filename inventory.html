@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Инвентарь</title>
+    <link rel="stylesheet" href="inventory.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+
+    <header class="inventory-header">
+        <h1>ИНВЕНТАРЬ</h1>
+        <div class="stats-bar">
+            <span>Предметы: <b id="item-count">0/15</b></span>
+        </div>
+    </header>
+
+    <main class="inventory-container">
+        <div class="inventory-grid" id="inventory-grid"></div>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="inventory.html" class="nav-link active">
+            <span class="nav-icon">📦</span>
+            <span class="nav-text">Инвентарь</span>
+        </a>
+        <a href="invite.html" class="nav-link">
+            <span class="nav-icon">👥</span>
+            <span class="nav-text">Пригласить</span>
+        </a>
+        <a href="index.html" class="nav-link">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Главная</span>
+        </a>
+        <a href="leaderboard.html" class="nav-link">
+            <span class="nav-icon">🏆</span>
+            <span class="nav-text">Рейтинг</span>
+        </a>
+    </nav>
+
+    <script src="inventory.js"></script>
+</body>
+</html>

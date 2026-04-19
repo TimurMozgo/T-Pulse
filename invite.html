@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Узлы Сети</title>
+    <link rel="stylesheet" href="invite.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+
+    <header class="nodes-header">
+        <div class="network-status">
+            <span class="status-dot"></span> SYSTEM ACTIVE
+        </div>
+        <h1>СЕТЬ УЗЛОВ</h1>
+        <p class="nodes-desc">Каждый подключенный <b>Узел</b> транслирует вам <b>10% XP</b> мощности</p>
+    </header>
+
+    <section class="nodes-control">
+        <div class="link-panel">
+            <input type="text" id="node-link" value="https://t.me/tineRex_bot?start=user777" readonly>
+            <button onclick="copyNodeLink()" id="copy-btn">COPY</button>
+        </div>
+        <button class="connect-btn" onclick="connectNewNode()">ПОДКЛЮЧИТЬ НОВЫЙ УЗЕЛ</button>
+    </section>
+
+    <main class="nodes-list-section">
+        <div class="list-header">
+            <h3>АКТИВНЫЕ ПОДКЛЮЧЕНИЯ (<span id="nodes-count">0</span>)</h3>
+        </div>
+        <div id="nodes-container">
+            <div class="loading-nodes">Поиск активных сигналов...</div>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="inventory.html" class="nav-link">
+            <span class="nav-icon">📦</span>
+            <span class="nav-text">Инвентарь</span>
+        </a>
+        <a href="invite.html" class="nav-link active">
+            <span class="nav-icon">👥</span>
+            <span class="nav-text">Пригласить</span>
+        </a>
+        <a href="index.html" class="nav-link">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Главная</span>
+        </a>
+        <a href="leaderboard.html" class="nav-link">
+            <span class="nav-icon">🏆</span>
+            <span class="nav-text">Рейтинг</span>
+        </a>
+    </nav>
+
+    <script src="invite.js"></script>
+</body>
+</html>

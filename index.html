@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>T-PULSE</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
@@ -16,7 +17,7 @@
             </div>
             <div class="balance-container">
                 <div class="balance-item ton">
-                    <span id="ton-balance" class="value">100.00</span>
+                    <span id="ton-balance" class="value">0.00</span>
                     <span class="currency">TON</span>
                 </div>
                 <div class="balance-item stars">
@@ -26,25 +27,6 @@
             </div>
         </header>
 
-        <nav class="bottom-nav">
-            <a href="inventory.html" class="nav-link">
-                <span class="nav-icon">📦</span>
-                <span class="nav-text">Инвентарь</span>
-            </a>
-            <a href="friends.html" class="nav-link">
-                <span class="nav-icon">👥</span>
-                <span class="nav-text">Друзья</span>
-            </a>
-            <a href="index.html" class="nav-link active">
-                <span class="nav-icon">🏠</span>
-                <span class="nav-text">Главная</span>
-            </a>
-            <a href="leaderboard.html" class="nav-link">
-                <span class="nav-icon">🏆</span>
-                <span class="nav-text">Рейтинг</span>
-            </a>
-        </nav>
-        
         <div class="progress-container">
             <div class="progress-header">
                 <span>LEVEL <span id="user-level">1</span></span>
@@ -55,12 +37,10 @@
             </div>
         </div>
 
-        <main class="wheel-section">
+        <main class="game-board">
             <div class="wheel-wrapper">
                 <div class="wheel-pointer"></div>
-                
-                <canvas id="wheel-canvas" width="500" height="500"></canvas>
-                
+                <canvas id="wheel-canvas" width="1000" height="1000"></canvas>
                 <button id="spin-btn" class="spin-button">TINELLPULSE</button>
             </div>
             
@@ -69,7 +49,9 @@
             </div>
         </main>
 
-        <button onclick="buyInsurance()" class="insurance-btn">ЗАСТРАХОВАТЬ 10 ⭐</button>
+        <div class="actions-section">
+            <button id="ins-btn" class="insurance-btn">ЗАСТРАХОВАТЬ 10 ⭐</button>
+        </div>
 
         <footer class="history-section">
             <div class="feed-header">RECENT WINS</div>
@@ -77,7 +59,28 @@
                 <div class="empty-feed">Удачи в первом вращении!</div>
             </div>
         </footer>
+
+        <nav class="bottom-nav">
+            <a href="inventory.html" class="nav-link">
+                <span class="nav-icon">📦</span>
+                <span class="nav-text">Инвентарь</span>
+            </a>
+            <a href="invite.html" class="nav-link">
+                <span class="nav-icon">👥</span>
+                <span class="nav-text">Друзья</span>
+            </a>
+            <a href="index.html" class="nav-link active">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Главная</span>
+            </a>
+            <a href="leaderboard.html" class="nav-link">
+                <span class="nav-icon">🏆</span>
+                <span class="nav-text">Топ</span>
+            </a>
+        </nav>
     </div>
+
+    <div id="win-popup" class="win-popup"></div>
 
     <script src="script.js"></script>
 </body>
