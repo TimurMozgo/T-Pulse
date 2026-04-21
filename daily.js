@@ -1,30 +1,44 @@
-// Функция для связи с твоим n8n
+// Функция для связи с n8n в тестовом режиме
 async function fetchUserProgress() {
-    const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || "666"; 
-    // Твой актуальный эндпоинт
+    // Берем ID из Телеграма, а если его нет (тест в браузере) — твой реальный ID
+    const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id || "6750749768"; 
+    
+    // Твой ТЕСТОВЫЙ эндпоинт
     const webhookUrl = `https://tiktiok.xyz/webhook-test/get-stats?userId=${userId}`;
 
     try {
+        console.log(`Аудитор: Запрашиваю данные для ID: ${userId}`);
         const response = await fetch(webhookUrl);
-        const data = await response.json();
         
-        // Мапим данные из таблицы в структуру заданий
+        if (!response.ok) {
+            console.error("Аудитор: Сервер n8n не отвечает. Нажми 'Execute Workflow'!");
+            return getDefaultTasks();
+        }
+
+        const data = await response.json();
+        console.log("Аудитор: Получены данные:", data);
+
         return [
             { id: 't1', name: "Сделай 10 спинов", reward: "x2 BOOST", current: data.spins || 0, total: 10, type: "Progress" },
             { id: 't2', name: "Пригласи 1 друга", reward: "+2 SPINS", current: data.refs || 0, total: 1, type: "Referrals" },
             { id: 't3', name: "Пригласи 3 друзей", reward: "+5 SPINS", current: data.refs || 0, total: 3, type: "Referrals" }
         ];
     } catch (e) {
-        console.error("Аудитор: Ошибка связи с n8n", e);
-        // Если сервер молчит, показываем нули
-        return [
-            { id: 't1', name: "Сделай 10 спинов", reward: "x2 BOOST", current: 0, total: 10, type: "Progress" },
-            { id: 't2', name: "Пригласи 1 друга", reward: "+2 SPINS", current: 0, total: 1, type: "Referrals" },
-            { id: 't3', name: "Пригласи 3 друзей", reward: "+5 SPINS", current: 0, total: 3, type: "Referrals" }
-        ];
+        console.error("Аудитор: Ошибка связи. Возможно, n8n не в режиме ожидания.", e);
+        return getDefaultTasks();
     }
 }
 
+// Заглушка, если данных нет
+function getDefaultTasks() {
+    return [
+        { id: 't1', name: "Сделай 10 спинов", reward: "x2 BOOST", current: 0, total: 10, type: "Progress" },
+        { id: 't2', name: "Пригласи 1 друга", reward: "+2 SPINS", current: 0, total: 1, type: "Referrals" },
+        { id: 't3', name: "Пригласи 3 друзей", reward: "+5 SPINS", current: 0, total: 3, type: "Referrals" }
+    ];
+}
+
+// Рендер карточек (твоя проверенная логика)
 async function renderTasks() {
     const container = document.getElementById('task-list');
     if (!container) return;
@@ -65,7 +79,7 @@ async function renderTasks() {
     container.innerHTML = html;
 }
 
-// Таймер до конца недели
+// Таймер
 function startTimer() {
     const timerEl = document.getElementById('mission-timer');
     if (!timerEl) return;
