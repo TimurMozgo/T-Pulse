@@ -61,7 +61,7 @@ async function loadReferralStats() {
 
     try {
         // ЗАМЕНИ НА СВОЙ РЕАЛЬНЫЙ WEBHOOK n8n
-        const response = await fetch(`https://tiktiok.xyz/webhook-test/get-stats?userId=${userId}`);
+        const response = await fetch(`https://tiktiok.xyz/webhook/get-stats?userId=${userId}`);
         const data = await response.json();
 
         // Обновляем количество узлов
