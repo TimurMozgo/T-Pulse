@@ -14,7 +14,6 @@ async function fetchUserProgress() {
         return getDefaultTasks();
     }
 
-    // ТВОЙ БОЕВОЙ URL (уже без -test)
     const webhookUrl = `https://tiktiok.xyz/webhook/get-stats?userId=${userId}`;
 
     try {
