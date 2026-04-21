@@ -1,0 +1,156 @@
+body {
+    background-color: #050507;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Таймер */
+.timer-container {
+    background: linear-gradient(180deg, rgba(0, 206, 209, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    border: 1px solid rgba(0, 206, 209, 0.2);
+    border-radius: 20px;
+    padding: 15px;
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.timer-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #888;
+    margin: 0 0 5px 0;
+}
+
+.timer-value {
+    font-size: 22px;
+    font-weight: 900;
+    color: #00ced1;
+    text-shadow: 0 0 10px rgba(0, 206, 209, 0.4);
+}
+
+/* Заголовок секции */
+.section-title {
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: #fff;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+/* Список заданий */
+/* Группировка категорий */
+.category-group {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 10px;
+    padding-left: 5px;
+}
+
+/* Карточка задания */
+.task-card {
+    background: #181818; /* Темный фон карточки */
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.task-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.task-name {
+    font-size: 15px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.task-reward {
+    font-size: 11px;
+    color: #888;
+    margin-top: 4px;
+    text-transform: uppercase;
+}
+
+.task-counter {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #ccc;
+}
+
+/* Полоса прогресса */
+.progress-container {
+    width: 100%;
+    height: 6px;
+    background: #222;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #00FF9D; /* Тот самый зеленый цвет из макета */
+    box-shadow: 0 0 10px rgba(0, 255, 157, 0.4);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+/* --- НАВИГАЦИЯ --- */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(10, 5, 20, 0.95); /* Темный фон навигации */
+    backdrop-filter: blur(10px); /* Эффект размытия фона */
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0 25px 0; /* Увеличен нижний отступ для безрамочных экранов */
+    border-top: 1px solid rgba(255,255,255,0.1);
+    z-index: 1000;
+}
+
+.nav-link {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: rgba(255,255,255,0.4);
+    transition: color 0.2s ease;
+}
+
+.nav-link.active {
+    color: var(--accent-cyan);
+}
+
+.nav-icon {
+    font-size: 20px;
+}
+
+.nav-text {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
