@@ -8,26 +8,38 @@ const spinBtn = document.getElementById('spin-btn');
 const resultDisplay = document.getElementById('result-display');
 const timerDisplay = document.getElementById('timer-display'); 
 
-// Балансы берем из localStorage ТОЛЬКО как временный кэш до первого ответа сервера
+// Балансы теперь будем приоритетно брать из n8n, localStorage оставляем как кэш
 let tonBalance = parseFloat(localStorage.getItem('tonBalance')) || 0.00;
-let starBalance = parseFloat(localStorage.getItem('starBalance')) || 0.0; // Сбросил в 0, чтобы не было "левых" цифр
+let starBalance = parseFloat(localStorage.getItem('starBalance')) || 100.0;
 let xpBalance = parseFloat(localStorage.getItem('xpBalance')) || 0;
 let userLevel = parseInt(localStorage.getItem('userLevel')) || 1;
 
-const SPIN_COST = 50.0;
+let hasShield = localStorage.getItem('hasShield') === 'true' || false; 
+let extraSpins = parseInt(localStorage.getItem('extraSpins')) || 0; 
+
+const MAX_LEVEL = 10;
+const SPIN_COST = 50.0; // Твоя цена в звездах
 let currentRotation = 0; 
 let isSpinning = false;
 let lastSectorIndex = -1;
 const images = {};
+let lightAngleOffset = 0;
 
 // ==========================================
-// 2. КОНФИГУРАЦИЯ СЕКТОРОВ
+// 2. КОНФИГУРАЦИЯ СЕКТОРОВ (ТОЛЬКО ВИЗУАЛ)
 // ==========================================
 const iconSources = {
-    crown: './image/PNG (6).png', mystery: './image/PNG (7).png', fire: './image/PNG (8).png',
-    diamond: './image/PNG (9).png', vortex: './image/PNG (10).png', star: './image/PNG (11).png',
-    bull: './image/bull.png', clover: './image/clover.png', hourglass: './image/hourglass.png', 
-    phoenix: './image/phoenix.png', wolf: './image/wolf.png'
+    crown: './image/PNG (6).png',      
+    mystery: './image/PNG (7).png',  
+    fire: './image/PNG (8).png',        
+    diamond: './image/PNG (9).png',  
+    vortex: './image/PNG (10).png',    
+    star: './image/PNG (11).png',        
+    bull: './image/bull.png',        
+    clover: './image/clover.png',    
+    hourglass: './image/hourglass.png', 
+    phoenix: './image/phoenix.png',  
+    wolf: './image/wolf.png'         
 };
 
 const sectors = [
@@ -45,7 +57,7 @@ const sectors = [
 ];
 
 // ==========================================
-// 3. ENGINE ОТРИСОВКИ (Фикс свечения)
+// 3. ENGINE ОТРИСОВКИ
 // ==========================================
 function drawWheel() {
     if (!canvas) return;
@@ -67,95 +79,166 @@ function drawWheel() {
         grad.addColorStop(1, '#111111'); 
         ctx.fillStyle = grad;
         ctx.fill();
-        
-        // Иконки
-        const distIcon = radius * 0.75; 
+        ctx.strokeStyle = "rgba(255,255,255,0.1)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        const distIcon = radius * 0.78; 
         if (images[sector.id] && images[sector.id].complete) {
             const img = images[sector.id];
-            const imgSize = radius * 0.25; 
+            const imgSize = radius * 0.28; 
             ctx.save();
             ctx.translate(center + Math.cos(angle + arc/2) * distIcon, center + Math.sin(angle + arc/2) * distIcon);
             ctx.rotate(angle + arc/2 + Math.PI / 2); 
-            ctx.shadowBlur = 10; // Уменьшил блюр, чтобы не было "зеленки"
+            ctx.shadowBlur = 15;
             ctx.shadowColor = sector.glow;
             ctx.drawImage(img, -imgSize/2, -imgSize/2, imgSize, imgSize);
             ctx.restore();
         }
 
-        // Текст
         ctx.save();
         const distText = radius * 0.45; 
         ctx.translate(center + Math.cos(angle + arc/2) * distText, center + Math.sin(angle + arc/2) * distText);
         ctx.rotate(angle + arc/2); 
-        ctx.font = `bold ${Math.floor(size / 40)}px Montserrat`;
+        const fontSize = Math.max(9, Math.floor(size / 38)); 
+        ctx.font = `bold ${fontSize}px Montserrat, Arial`;
         ctx.textAlign = "center";
         ctx.fillStyle = "white";
-        ctx.fillText(sector.label.toUpperCase(), 0, 0);
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = sector.glow;
+        const words = sector.label.toUpperCase().split(' ');
+        const lineHeight = fontSize + 2; 
+        words.forEach((word, index) => {
+            const yOffset = (index - (words.length - 1) / 2) * lineHeight;
+            ctx.fillText(word, 0, yOffset);
+        });
         ctx.restore();
         ctx.restore();
     });
 
-    // Центральный круг
+    const lightRadius = center - 8; 
+    const numberOfLights = 36; 
+    const lightArc = (Math.PI * 2) / numberOfLights;
     ctx.save();
+    for (let j = 0; j < numberOfLights; j++) {
+        const angleL = j * lightArc;
+        const xL = center + Math.cos(angleL) * lightRadius;
+        const yL = center + Math.sin(angleL) * lightRadius;
+        ctx.beginPath();
+        ctx.arc(xL, yL, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = (j % 2 === 0) ? "#FFD700" : "white";
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.fill();
+    }
+    ctx.restore();
+
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0); 
+    const innerRadius = radius * 0.22; 
     ctx.beginPath();
-    ctx.arc(center, center, radius * 0.22, 0, Math.PI * 2);
+    ctx.arc(center, center, innerRadius, 0, Math.PI * 2);
     ctx.fillStyle = "#050507";
-    ctx.shadowBlur = 15;
+    ctx.shadowBlur = 25;
     ctx.shadowColor = "#00ced1"; 
     ctx.fill();
+    ctx.strokeStyle = "#00ced1";
+    ctx.lineWidth = 2;
+    ctx.stroke();
     ctx.fillStyle = "white";
-    ctx.font = "900 10px Montserrat";
+    const logoFontSize = Math.max(8, Math.floor(size / 40));
+    ctx.font = `900 ${logoFontSize}px Montserrat`;
     ctx.textAlign = "center";
-    ctx.fillText("TINELL", center, center - 5);
-    ctx.fillText("PULSE", center, center + 10);
+    ctx.textBaseline = "middle";
+    ctx.fillText("TINELLPULSE", center, center);
     ctx.restore();
 }
 
 // ==========================================
-// 4. ЛОГИКА ОБНОВЛЕНИЯ
+// 4. ЛОГИКА И UI
 // ==========================================
 function updateUI() {
     const starEl = document.getElementById('star-balance');
     const tonEl = document.getElementById('ton-balance');
+    const levelEl = document.getElementById('user-level');
+    const progressFill = document.getElementById('progress-fill');
+    const xpText = document.getElementById('xp-text');
 
     if (starEl) starEl.innerText = starBalance.toFixed(1);
     if (tonEl) tonEl.innerText = tonBalance.toFixed(2);
+    if (levelEl) levelEl.innerText = userLevel;
+    
+    let targetXP = userLevel * 100;
+    if (progressFill && xpText) {
+        progressFill.style.width = Math.min((xpBalance / targetXP) * 100, 100) + "%";
+        xpText.innerText = `${Math.floor(xpBalance)} / ${targetXP} XP`;
+    }
 
     localStorage.setItem('starBalance', starBalance);
     localStorage.setItem('tonBalance', tonBalance);
+    localStorage.setItem('xpBalance', xpBalance);
+    localStorage.setItem('userLevel', userLevel);
+
+    if (extraSpins > 0) {
+        spinBtn.innerText = `FREE SPIN (${extraSpins})`;
+        spinBtn.style.boxShadow = "0 0 15px #00FF00";
+    } else {
+        spinBtn.innerText = "SPIN ⭐ 50";
+        spinBtn.style.boxShadow = "";
+    }
+    drawWheel(); 
+}
+
+// ==========================================
+// 5. SPIN И АНИМАЦИЯ
+// ==========================================
+function handleReward(winner, serverData) {
+    resultDisplay.innerText = winner.label;
+    
+    // ПРИВЯЗКА К ТВОЕЙ ТАБЛИЦЕ: обновляем из того, что прислал n8n
+    if (serverData.newBalanceStars !== undefined) starBalance = parseFloat(serverData.newBalanceStars);
+    if (serverData.newBalanceTon !== undefined) tonBalance = parseFloat(serverData.newBalanceTon);
+    
+    if (winner.id === 'phoenix') hasShield = true;
+    if (winner.id === 'wolf' && !hasShield) {
+         resultDisplay.innerText = "ЛИКВИДАЦИЯ!";
+    }
+
+    if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    updateUI();
 }
 
 async function spin() {
     if (isSpinning) return;
+
     isSpinning = true;
     spinBtn.disabled = true;
-    resultDisplay.innerText = "СВЯЗЬ С СЕРВЕРОМ...";
+    resultDisplay.innerText = "АНАЛИЗ РЫНКА...";
 
     try {
-        // ТВОЙ ВЕБХУК
         const response = await fetch('https://tiktiok.xyz/webhook-test/T-Pulse', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                userId: tg.initDataUnsafe?.user?.id || "6750749768", // Твой ID для теста
+                userId: tg.initDataUnsafe?.user?.id || "6750749768",
                 username: tg.initDataUnsafe?.user?.username || "tinellton"
             })
         });
 
-        if (!response.ok) throw new Error("n8n Offline");
+        if (!response.ok) throw new Error("Server Error");
 
         const data = await response.json();
-        
-        // ПРОВЕРКА: Если n8n прислал ошибку внутри
-        if (data.winningIndex === undefined) {
-             throw new Error("Invalid Data from Server");
-        }
+        // Если n8n выдал ошибку в Google Sheets, winningIndex может не прийти
+        if (data.winningIndex === undefined) throw new Error("No Index from n8n");
 
         const winningIndex = data.winningIndex;
         const sectorStep = (Math.PI * 2) / sectors.length;
-        const extraTurns = Math.PI * 2 * 8; 
-        const targetAngle = (Math.PI * 1.5) - (winningIndex * sectorStep + (sectorStep / 2));
-        const finalRotation = currentRotation + extraTurns + (targetAngle - (currentRotation % (Math.PI * 2)));
+        const extraFullTurns = Math.PI * 2 * 10; 
+        const targetAngle = winningIndex * sectorStep + (sectorStep / 2);
+        const stopAngle = (Math.PI * 1.5) - targetAngle;
+        
+        const startRotation = currentRotation;
+        const finalRotation = startRotation + extraFullTurns + (stopAngle - (startRotation % (Math.PI * 2)));
 
         const duration = 5000;
         const startTime = performance.now();
@@ -163,52 +246,57 @@ async function spin() {
         function animate(currentTime) {
             let progress = Math.min((currentTime - startTime) / duration, 1);
             let ease = 1 - Math.pow(1 - progress, 4);
-            let rotation = currentRotation + (finalRotation - currentRotation) * ease;
+            let rotation = startRotation + (finalRotation - startRotation) * ease;
             canvas.style.transform = `rotate(${rotation}rad)`;
 
+            const currentSecIdx = Math.floor(((rotation % (Math.PI * 2)) / sectorStep));
+            if (currentSecIdx !== lastSectorIndex) {
+                lastSectorIndex = currentSecIdx;
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            }
+            
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
                 currentRotation = rotation;
                 isSpinning = false;
                 spinBtn.disabled = false;
-                
-                // Обновляем баланс из данных n8n
-                starBalance = parseFloat(data.newBalanceStars || starBalance);
-                tonBalance = parseFloat(data.newBalanceTon || tonBalance);
-                resultDisplay.innerText = sectors[winningIndex].label;
-                updateUI();
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                handleReward(sectors[winningIndex], data);
             }
         }
         requestAnimationFrame(animate);
 
     } catch (err) {
-        console.error(err);
-        resultDisplay.innerText = "ОШИБКА АУДИТОРА";
+        console.error("Ошибка Аудитора:", err);
+        resultDisplay.innerText = "ОШИБКА СВЯЗИ";
         isSpinning = false;
         spinBtn.disabled = false;
-        tg.showAlert("Сервер n8n не ответил. Проверь узел Google Sheets!");
+        // Показываем в Telegram, что именно пошло не так
+        tg.showAlert("Проверь n8n! Аудитор не вернул данные. Скорее всего, ошибка в Google Sheets.");
     }
 }
 
 // ==========================================
-// 5. ЗАПУСК
+// 6. ЗАПУСК
 // ==========================================
 window.onload = () => {
     if(tg.expand) tg.expand();
-    canvas.width = canvas.parentElement.offsetWidth;
-    canvas.height = canvas.width;
-    
-    // Загрузка картинок
+    const containerSize = canvas.parentElement.offsetWidth || 350;
+    canvas.width = containerSize;
+    canvas.height = containerSize;
+
+    updateUI(); 
+    if (timerDisplay) timerDisplay.innerText = "TINELLPULSE CASINO ENGINE";
+
     let loaded = 0;
     const total = Object.keys(iconSources).length;
     for (let key in iconSources) {
         images[key] = new Image();
         images[key].src = iconSources[key];
         images[key].onload = () => { if (++loaded === total) drawWheel(); };
+        images[key].onerror = () => { if (++loaded === total) drawWheel(); };
     }
-    updateUI();
+    drawWheel();
 };
 
 spinBtn.onclick = spin;
