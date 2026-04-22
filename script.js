@@ -276,14 +276,28 @@ async function spin() {
     }
 }
 
+
 // ==========================================
-// 6. ЗАПУСК
+// 6. ЗАПУСК (ИСПРАВЛЕННЫЙ ДЛЯ TELEGRAM)
 // ==========================================
 window.onload = () => {
     if(tg.expand) tg.expand();
-    const containerSize = canvas.parentElement.offsetWidth || 350;
-    canvas.width = containerSize;
-    canvas.height = containerSize;
+
+    // 1. Фикс четкости (DPI)
+    const dpr = window.devicePixelRatio || 1;
+    const container = canvas.parentElement;
+    const size = Math.min(container.offsetWidth, window.innerWidth - 40);
+
+    // Устанавливаем реальные пиксели для четкости
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+
+    // Масштабируем отрисовку обратно, чтобы координаты в коде не менялись
+    ctx.scale(dpr, dpr);
+
+    // Устанавливаем визуальный размер через CSS
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
 
     updateUI(); 
     if (timerDisplay) timerDisplay.innerText = "TINELLPULSE CASINO ENGINE";
@@ -293,10 +307,19 @@ window.onload = () => {
     for (let key in iconSources) {
         images[key] = new Image();
         images[key].src = iconSources[key];
-        images[key].onload = () => { if (++loaded === total) drawWheel(); };
-        images[key].onerror = () => { if (++loaded === total) drawWheel(); };
+        images[key].onload = () => { 
+            if (++loaded === total) drawWheel(); 
+        };
+        images[key].onerror = () => { 
+            if (++loaded === total) drawWheel(); 
+        };
     }
-    drawWheel();
+    
+    // Перерисовываем при изменении размера (например, при открытии клавиатуры)
+    window.addEventListener('resize', () => {
+        const newSize = Math.min(container.offsetWidth, window.innerWidth - 40);
+        canvas.style.width = newSize + 'px';
+        canvas.style.height = newSize + 'px';
+        drawWheel();
+    });
 };
-
-spinBtn.onclick = spin;
