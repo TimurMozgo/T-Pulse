@@ -102,7 +102,6 @@ body {
 }
 
 /* --- ИГРОВАЯ ЗОНА --- */
-/* ОБЕРТКА КОЛЕСА — ОСТАВЛЯЕМ ОДНУ */
 .wheel-wrapper {
     position: relative;
     width: 85vmin; 
@@ -120,6 +119,9 @@ body {
     border: 6px solid #111;
     box-shadow: 0 0 30px rgba(0,0,0,0.9);
     display: block;
+    /* КРИТИЧНО: отключаем CSS анимацию, чтобы JS работал плавно */
+    transition: none !important; 
+    will-change: transform; /* Подсказка браузеру для плавности */
 }
 
 /* ТВОЯ КНОПКА — ПРОЗРАЧНАЯ ЗОНА КЛИКА ПОВЕРХ ЦЕНТРА */
